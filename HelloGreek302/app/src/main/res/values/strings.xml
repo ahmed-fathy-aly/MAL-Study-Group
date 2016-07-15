@@ -1,0 +1,6 @@
+<!-- here you can put strings or arrays of strings
+This is useful for when you want to translate your app, you'll just have many version of this file each for a language -->
+<resources>
+    <string name="app_name">HelloGreek302</string>
+    <string name="hello_greek_302">Hello Greek 302!</string>
+</resources>

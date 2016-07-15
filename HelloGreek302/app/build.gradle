@@ -1,0 +1,29 @@
+// app's configuration, here's where you can edit the build configs and add dependencies
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24 // use the latest's version, It's the API version of Android that you compile against.
+    buildToolsVersion "24.0.0"
+
+    defaultConfig {
+        applicationId "com.enterprises.wayne.hellogreek302"
+        minSdkVersion 16 // the app will run on phones have API version 16 or higher
+        targetSdkVersion 24 // the API version we tested the app on
+        versionCode 1       // the version of the app not the API, increment this whenever you make a new release
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:24.0.0'
+    // add more dependencies here
+}
