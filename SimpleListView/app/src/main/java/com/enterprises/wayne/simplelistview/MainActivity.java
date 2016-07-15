@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
@@ -20,14 +23,14 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         // generate random data
-        String[] randomData = getRandomData(20);
+        List<String> randomData = getRandomData(20);
 
         // setup the adapter
         mAdapterNumbers = new ArrayAdapter<String>(
                 this
-                ,R.layout.row_number
-                ,R.id.text_view_number
-                ,randomData
+                , R.layout.row_number
+                , R.id.text_view_number
+                , randomData
         );
 
         // reference the list view
@@ -40,12 +43,12 @@ public class MainActivity extends AppCompatActivity
     /**
      * fills an array of the specified size with random numbers from 1 to 1000
      */
-    private String[] getRandomData(int size)
+    private List<String> getRandomData(int size)
     {
         Random random = new Random();
-        String[] result = new String[size];
+        List<String> result = new LinkedList<>();
         for (int i = 0; i < size; i++)
-            result[i] = (random.nextInt(1000) + 1) + "";
+            result.add((random.nextInt(1000) + 1) + "");
         return result;
     }
 }
