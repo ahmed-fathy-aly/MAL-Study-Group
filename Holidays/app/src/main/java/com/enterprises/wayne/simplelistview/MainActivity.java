@@ -53,6 +53,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+        // check which button was clicked
+        if (item.getItemId() == R.id.menu_item_refresh)
+        {
+            Log.d("Game", "refresh clicked");
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
