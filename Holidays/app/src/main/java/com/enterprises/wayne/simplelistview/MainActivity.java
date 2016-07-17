@@ -1,5 +1,7 @@
 package com.enterprises.wayne.simplelistview;
 
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,15 +27,12 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // generate random data
-        List<String> randomData = getRandomData(20);
-
         // setup the adapter
         mAdapterNumbers = new ArrayAdapter<String>(
                 this
                 , R.layout.row_number
                 , R.id.text_view_number
-                , randomData
+                , new ArrayList<String>()
         );
 
         // reference the list view
@@ -56,10 +55,20 @@ public class MainActivity extends AppCompatActivity
         // check which button was clicked
         if (item.getItemId() == R.id.menu_item_refresh)
         {
-            Log.d("Game", "refresh clicked");
+            loadData();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * launches an AsyncTask that downlods the data from the server and puts it in the list
+     */
+    private void loadData()
+    {
+        HolidaysLoaderTask holidaysLoaderTask = new HolidaysLoaderTask();
+        String params[] = {};
+        holidaysLoaderTask.execute(params);
     }
 
     /**
@@ -72,5 +81,44 @@ public class MainActivity extends AppCompatActivity
         for (int i = 0; i < size; i++)
             result.add((random.nextInt(1000) + 1) + "");
         return result;
+    }
+
+    private class HolidaysLoaderTask extends AsyncTask<String, Void, List<String>>
+    {
+
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute()
+        {
+            // show a dialog while we are loading the data
+            progressDialog = ProgressDialog.show(MainActivity.this, "", getString(R.string.loading));
+        }
+
+        @Override
+        protected List<String> doInBackground(String... strings)
+        {
+            // simulate a delay
+            try
+            {
+                Thread.sleep(3000);
+            } catch (InterruptedException e)
+            {
+                Log.e("Game", "interrupted exception " + e.getMessage());
+            }
+
+            // for now, we'll just return random data
+            return getRandomData(100);
+        }
+
+        @Override
+        protected void onPostExecute(List<String> s)
+        {
+            // dismiss the loading dialog
+            progressDialog.dismiss();
+
+            // add the data to the adapter
+            mAdapterNumbers.addAll(s);
+        }
     }
 }
