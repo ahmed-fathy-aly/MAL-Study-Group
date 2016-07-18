@@ -41,33 +41,7 @@ public class Holiday
         return isPublic;
     }
 
-    /* methods */
 
-    /**
-     * parses a holiday object from a json
-     * @return null if parsing failed
-     */
-    public static Holiday fromJson(JSONObject jsonObject)
-    {
-        try
-        {
-            // parse the fields
-            String name = jsonObject.getString("name");
-            boolean isPublic = jsonObject.getBoolean("public");
-            String dateStr = jsonObject.getString("date");
-            Calendar calendar = DateUtils.parseCalendar(dateStr);
-            if (calendar == null)
-                return null;
 
-            // create the object
-            return new Holiday(name, calendar, isPublic);
-
-        } catch (JSONException e)
-        {
-            Log.e("Game", "error parsing holiday " + e.getMessage());
-            return null;
-        }
-
-    }
 
 }

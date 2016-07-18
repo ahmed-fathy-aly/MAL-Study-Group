@@ -4,9 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,7 +19,7 @@ public class ParsingHolidayTest
     {
         // check that we can parse the date
         String dateStr = "2016-07-04";
-        Calendar calendar = DateUtils.parseCalendar(dateStr);
+        Calendar calendar = ParsingUtils.parseCalendar(dateStr);
         assertNotNull(calendar);
         assertEquals(4, calendar.get(Calendar.DAY_OF_MONTH));
         assertEquals(6, calendar.get(Calendar.MONTH));
@@ -39,7 +37,7 @@ public class ParsingHolidayTest
                 "\t\t\t\"public\": true\n" +
                 "\t\t}";
         JSONObject jsonObject = new JSONObject(jsonString);
-        Holiday holiday = Holiday.fromJson(jsonObject);
+        Holiday holiday = ParsingUtils.parseHoliday(jsonObject);
 
         assertEquals("Independence Day", holiday.getName());
         assertEquals(true, holiday.isPublic());
