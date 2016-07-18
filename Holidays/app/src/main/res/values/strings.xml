@@ -2,4 +2,5 @@
     <string name="app_name">Holidays</string>
     <string name="refresh">Refresh</string>
     <string name="loading">Loading...</string>
+    <string name="error">Error</string>
 </resources>

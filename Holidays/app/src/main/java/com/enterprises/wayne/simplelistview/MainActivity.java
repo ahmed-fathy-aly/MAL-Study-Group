@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity
      * downloads a list of holidays from the backend
      * doInBackground returns null in case of an error
      */
-    private class HolidaysLoaderTask extends AsyncTask<String, Void, List<String>>
+    private class HolidaysLoaderTask extends AsyncTask<String, Void, List<Holiday>>
     {
 
         private ProgressDialog progressDialog;
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        protected List<String> doInBackground(String... params)
+        protected List<Holiday> doInBackground(String... params)
         {
             // make the connection
             HttpURLConnection urlConnection = null;
@@ -172,23 +173,26 @@ public class MainActivity extends AppCompatActivity
             if (holidayList == null)
                 return null;
 
-            // convert to a string
-            List<String> result = new ArrayList<>();
-            for (Holiday holiday : holidayList)
-                result.add(holiday.getName());
-            return result;
+            return holidayList;
         }
 
 
         @Override
-        protected void onPostExecute(List<String> s)
+        protected void onPostExecute(List<Holiday> holidayList)
         {
             // dismiss the loading dialog
             progressDialog.dismiss();
 
             // add the data to the adapter
-            if (s != null)
-                mAdapterNumbers.addAll(s);
+            if (holidayList != null)
+            {
+                // convert to strings
+                List<String> result = new ArrayList<>();
+                for (Holiday holiday : holidayList)
+                    result.add(holiday.getName());
+                mAdapterNumbers.addAll(result);
+            } else
+                Toast.makeText(MainActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
         }
     }
 
