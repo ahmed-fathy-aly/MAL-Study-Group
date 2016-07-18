@@ -1,6 +1,7 @@
 package com.enterprises.wayne.simplelistview;
 
 import android.app.ProgressDialog;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +11,12 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,7 +74,7 @@ public class MainActivity extends AppCompatActivity
     private void loadData()
     {
         HolidaysLoaderTask holidaysLoaderTask = new HolidaysLoaderTask();
-        String params[] = {};
+        String params[] = {"US", "2016"};
         holidaysLoaderTask.execute(params);
     }
 
@@ -83,6 +90,10 @@ public class MainActivity extends AppCompatActivity
         return result;
     }
 
+    /**
+     * downloads a list of holidays from the backend
+     * doInBackground returns null in case of an error
+     */
     private class HolidaysLoaderTask extends AsyncTask<String, Void, List<String>>
     {
 
@@ -96,19 +107,65 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        protected List<String> doInBackground(String... strings)
+        protected List<String> doInBackground(String... params)
         {
-            // simulate a delay
+            // make the connection
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+            String resultString;
+
             try
             {
-                Thread.sleep(3000);
-            } catch (InterruptedException e)
+                // construct the url
+                Uri builtUri = Uri.parse("https://holidayapi.com/v1/holidays").buildUpon()
+                        .appendQueryParameter("country", params[0])
+                        .appendQueryParameter("year", params[1])
+                        .build();
+                URL url = new URL(builtUri.toString());
+                Log.d("Game", "url = " + builtUri.toString());
+
+                // make the connection to the server
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // read the input stream to a string
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null)
+                    return null;
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null)
+                    buffer.append(line + "\n");
+
+                if (buffer.length() == 0)
+                    return null;
+                resultString = buffer.toString();
+
+                Log.d("Game", "result string: " + resultString);
+
+            } catch (IOException e)
             {
-                Log.e("Game", "interrupted exception " + e.getMessage());
+                Log.e("Game", "Error ", e);
+                return null;
+            } finally
+            {
+                if (urlConnection != null)
+                    urlConnection.disconnect();
+                if (reader != null)
+                    try
+                    {
+                        reader.close();
+                    } catch (final IOException e)
+                    {
+                        Log.e("Game", "Error closing stream", e);
+                    }
             }
 
-            // for now, we'll just return random data
-            return getRandomData(100);
+
+            return null;
         }
 
         @Override
@@ -118,7 +175,8 @@ public class MainActivity extends AppCompatActivity
             progressDialog.dismiss();
 
             // add the data to the adapter
-            mAdapterNumbers.addAll(s);
+            if (s != null)
+                mAdapterNumbers.addAll(s);
         }
     }
 }
