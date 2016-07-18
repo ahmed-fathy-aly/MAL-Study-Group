@@ -12,6 +12,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,125 +78,54 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * launches an AsyncTask that downlods the data from the server and puts it in the list
+     * makes a GET request to get the date from the web service
      */
     private void loadData()
     {
-        HolidaysLoaderTask holidaysLoaderTask = new HolidaysLoaderTask();
-        String params[] = {"US", "2016"};
-        holidaysLoaderTask.execute(params);
-    }
+        // construct the url
+        Uri builtUri = Uri.parse("https://holidayapi.com/v1/holidays").buildUpon()
+                .appendQueryParameter("country", "US")
+                .appendQueryParameter("year", "2016")
+                .build();
+        String url = builtUri.toString();
 
-    /**
-     * fills an array of the specified size with random numbers from 1 to 1000
-     */
-    private List<String> getRandomData(int size)
-    {
-        Random random = new Random();
-        List<String> result = new LinkedList<>();
-        for (int i = 0; i < size; i++)
-            result.add((random.nextInt(1000) + 1) + "");
-        return result;
-    }
 
-    /**
-     * downloads a list of holidays from the backend
-     * doInBackground returns null in case of an error
-     */
-    private class HolidaysLoaderTask extends AsyncTask<String, Void, List<Holiday>>
-    {
-
-        private ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute()
-        {
-            // show a dialog while we are loading the data
-            progressDialog = ProgressDialog.show(MainActivity.this, "", getString(R.string.loading));
-        }
-
-        @Override
-        protected List<Holiday> doInBackground(String... params)
-        {
-            // make the connection
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-            String resultString;
-
-            try
-            {
-                // construct the url
-                Uri builtUri = Uri.parse("https://holidayapi.com/v1/holidays").buildUpon()
-                        .appendQueryParameter("country", params[0])
-                        .appendQueryParameter("year", params[1])
-                        .build();
-                URL url = new URL(builtUri.toString());
-                Log.d("Game", "url = " + builtUri.toString());
-
-                // make the connection to the server
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // read the input stream to a string
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null)
-                    return null;
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null)
-                    buffer.append(line + "\n");
-
-                if (buffer.length() == 0)
-                    return null;
-                resultString = buffer.toString();
-
-            } catch (IOException e)
-            {
-                Log.e("Game", "Error ", e);
-                return null;
-            } finally
-            {
-                if (urlConnection != null)
-                    urlConnection.disconnect();
-                if (reader != null)
-                    try
+        // make the request
+        final ProgressDialog progressDialog = ProgressDialog.show(this, "", getString(R.string.loading));
+        Ion.with(this)
+                .load(url)
+                .asString()
+                .setCallback(new FutureCallback<String>()
+                {
+                    @Override
+                    public void onCompleted(Exception e, String jsonString)
                     {
-                        reader.close();
-                    } catch (final IOException e)
-                    {
-                        Log.e("Game", "Error closing stream", e);
+                        // dismiss the dialog
+                        progressDialog.dismiss();
+
+                        // check error
+                        if (e != null)
+                        {
+                            Toast.makeText(MainActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        // parse the data
+                        List<Holiday> holidayList = ParsingUtils.parseHolidayList(jsonString);
+                        if (holidayList == null)
+                        {
+                            Toast.makeText(MainActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        // convert to a list of string
+                        List<String> result = new ArrayList<>();
+                        for (Holiday holiday : holidayList)
+                            result.add(holiday.getName());
+                        mAdapterNumbers.addAll(result);
                     }
-            }
+                });
 
-            // parse the holidays
-            List<Holiday> holidayList = ParsingUtils.parseHolidayList(resultString);
-            if (holidayList == null)
-                return null;
-
-            return holidayList;
-        }
-
-
-        @Override
-        protected void onPostExecute(List<Holiday> holidayList)
-        {
-            // dismiss the loading dialog
-            progressDialog.dismiss();
-
-            // add the data to the adapter
-            if (holidayList != null)
-            {
-                // convert to strings
-                List<String> result = new ArrayList<>();
-                for (Holiday holiday : holidayList)
-                    result.add(holiday.getName());
-                mAdapterNumbers.addAll(result);
-            } else
-                Toast.makeText(MainActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
-        }
     }
 
 
