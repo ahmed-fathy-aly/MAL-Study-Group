@@ -1,10 +1,14 @@
 package com.enterprises.wayne.simplelistview;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -46,5 +50,45 @@ public class ParsingHolidayTest
         assertEquals(2016, holiday.getDate().get(Calendar.YEAR));
     }
 
+    @Test
+    public void testParseHolidayList() throws JSONException
+    {
+        // test parsing the whole holidays reponse from a json
+        String jsonString =
+                "{\n" +
+                        "\t\"status\": 200,\n" +
+                        "\t\"holidays\": {\n" +
+                        "\t\t\"2016-01-01\": [\n" +
+                        "\t\t\t{\n" +
+                        "\t\t\t\t\"name\": \"Last Day of Kwanzaa\",\n" +
+                        "\t\t\t\t\"date\": \"2016-01-01\",\n" +
+                        "\t\t\t\t\"observed\": \"2016-01-01\",\n" +
+                        "\t\t\t\t\"public\": false\n" +
+                        "\t\t\t},\n" +
+                        "\t\t\t{\n" +
+                        "\t\t\t\t\"name\": \"New Year's Day\",\n" +
+                        "\t\t\t\t\"date\": \"2016-01-01\",\n" +
+                        "\t\t\t\t\"observed\": \"2016-01-01\",\n" +
+                        "\t\t\t\t\"public\": true\n" +
+                        "\t\t\t}\n" +
+                        "\t\t],\n" +
+                        "\t\t\"2016-01-06\": [\n" +
+                        "\t\t\t{\n" +
+                        "\t\t\t\t\"name\": \"Epiphany\",\n" +
+                        "\t\t\t\t\"date\": \"2016-01-06\",\n" +
+                        "\t\t\t\t\"observed\": \"2016-01-06\",\n" +
+                        "\t\t\t\t\"public\": false\n" +
+                        "\t\t\t}\n" +
+                        "\t\t]\n" +
+                        "\t}\n" +
+                        "}";
+
+        final List<Holiday> result = ParsingUtils.parseHolidayList(jsonString);
+
+        assertEquals("Last Day of Kwanzaa", result.get(0).getName());
+        assertEquals("New Year's Day", result.get(1).getName());
+        assertEquals("Epiphany", result.get(2).getName());
+
+    }
 
 }

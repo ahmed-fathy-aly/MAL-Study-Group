@@ -2,12 +2,19 @@ package com.enterprises.wayne.simplelistview;
 
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by ahmed on 7/18/2016.
@@ -57,6 +64,53 @@ public class ParsingUtils
         } catch (JSONException e)
         {
             Log.e("Game", "error parsing holiday " + e.getMessage());
+            return null;
+        }
+
+    }
+
+    /**
+     * parses a list of holiday objects from a json
+     * sorts the holidays by their date, earliest first
+     *
+     * @return null if parsing failed
+     */
+    static List<Holiday> parseHolidayList(String resultString)
+    {
+        try
+        {
+            // check status
+            JSONObject jsonObject = new JSONObject(resultString);
+            int status = jsonObject.getInt("status");
+            if (status != 200)
+                return null;
+
+            // parse the holidays objects
+            List<Holiday> holidayList = new LinkedList<>();
+            JSONObject holidaysJsonObject = jsonObject.getJSONObject("holidays");
+            Iterator<String> iterator = holidaysJsonObject.keys();
+            while (iterator.hasNext())
+            {
+                String key = iterator.next();
+                JSONArray holidaysArr = holidaysJsonObject.getJSONArray(key);
+                for (int i = 0; i < holidaysArr.length(); i++)
+                    holidayList.add(ParsingUtils.parseHoliday(holidaysArr.getJSONObject(i)));
+            }
+
+            // sort by date
+            Collections.sort(holidayList, new Comparator<Holiday>()
+            {
+                @Override
+                public int compare(Holiday lhs, Holiday rhs)
+                {
+                    return lhs.getDate().compareTo(rhs.getDate());
+                }
+            });
+            return holidayList;
+
+        } catch (JSONException e)
+        {
+            Log.e("Game", "error parsing list of holidays " + e.getMessage());
             return null;
         }
 

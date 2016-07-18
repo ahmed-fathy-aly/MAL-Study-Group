@@ -149,8 +149,6 @@ public class MainActivity extends AppCompatActivity
                     return null;
                 resultString = buffer.toString();
 
-                Log.d("Game", "result string: " + resultString);
-
             } catch (IOException e)
             {
                 Log.e("Game", "Error ", e);
@@ -169,8 +167,16 @@ public class MainActivity extends AppCompatActivity
                     }
             }
 
+            // parse the holidays
+            List<Holiday> holidayList = ParsingUtils.parseHolidayList(resultString);
+            if (holidayList == null)
+                return null;
 
-            return null;
+            // convert to a string
+            List<String> result = new ArrayList<>();
+            for (Holiday holiday : holidayList)
+                result.add(holiday.getName());
+            return result;
         }
 
 
