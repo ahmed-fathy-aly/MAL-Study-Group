@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.Random;
 
 /**
  * Created by ahmed on 7/18/2016.
@@ -40,8 +41,6 @@ public class Holiday
     {
         return isPublic;
     }
-
-
 
 
 }

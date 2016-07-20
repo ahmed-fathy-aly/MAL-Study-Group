@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
                 .appendQueryParameter("year", "2016")
                 .build();
         String url = builtUri.toString();
-
+        Log.d("Game", "url = " + url);
 
         // make the request
         final ProgressDialog progressDialog = ProgressDialog.show(this, "", getString(R.string.loading));
@@ -100,6 +100,8 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onCompleted(Exception e, String jsonString)
                     {
+
+                        Log.d("Game", "result = " + jsonString);
                         // dismiss the dialog
                         progressDialog.dismiss();
 
