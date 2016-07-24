@@ -1,3 +1,3 @@
-Simple list view
-----------------------
-Shows a list view containing some random numbers
+Holidays
+--------
+Uses the Holidays API to show a list of this year's holidays
