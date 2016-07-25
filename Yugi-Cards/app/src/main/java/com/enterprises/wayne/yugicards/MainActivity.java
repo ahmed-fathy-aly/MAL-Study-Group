@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,6 +26,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     /* UI */
     ListView listViewCards;
     ArrayAdapter<String> adapterCards;
+
+    /* fields */
+    List<Card> cardsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -49,6 +54,24 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         // add listener
         listViewCards.setOnItemClickListener(this);
         loadData();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        if (item.getItemId() == R.id.menu_item_settings)
+        {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -81,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                         // parse the data
                         List<Card> cards = ParsingUtils.parseResponse(result);
+                        MainActivity.this.cardsList = cards;
                         if (cards == null)
                         {
                             Toast.makeText(MainActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
@@ -100,10 +124,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
     {
         // open the details activity
         Intent intent = new Intent(this, DetailsActivity.class);
+        Card card = cardsList.get(position);
+        intent.putExtra(DetailsActivity.EXTRAS_CARD, card);
         startActivity(intent);
     }
 }

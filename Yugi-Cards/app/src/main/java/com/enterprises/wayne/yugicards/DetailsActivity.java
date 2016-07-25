@@ -8,6 +8,9 @@ import android.widget.TextView;
 public class DetailsActivity extends AppCompatActivity
 {
 
+    /* constants */
+    public static final String EXTRAS_CARD = "extrasCard";
+
     /* UI */
     private TextView textViewTitle;
     private TextView textViewDescription;
@@ -26,9 +29,15 @@ public class DetailsActivity extends AppCompatActivity
         textViewDescription = (TextView) findViewById(R.id.text_view_description);
         imageViewCard = (ImageView) findViewById(R.id.image_view_card);
 
-        textViewTitle.setText("Card Title");
-        imageViewCard.setImageResource(R.mipmap.ic_launcher);
-        textViewDescription.setText("Card Description");
+        // get data from the intent
+        if (getIntent() != null && getIntent().hasExtra(EXTRAS_CARD))
+        {
+            Card card = (Card) getIntent().getSerializableExtra(EXTRAS_CARD);
+            textViewTitle.setText(card.getTitle());
+            imageViewCard.setImageResource(R.mipmap.ic_launcher);
+            textViewDescription.setText(card.getDescription());
+        }
+
     }
 
 

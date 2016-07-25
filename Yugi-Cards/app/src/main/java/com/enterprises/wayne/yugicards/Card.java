@@ -1,9 +1,13 @@
 package com.enterprises.wayne.yugicards;
 
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
 /**
  * Created by ahmed on 7/25/2016.
  */
-public class Card
+public class Card implements Serializable
 {
     /* attributes */
     String title;
