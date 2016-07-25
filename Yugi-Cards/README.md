@@ -6,6 +6,6 @@ Yu-Gi-Oh cards App
 
 Screenshots
 -----------
-<a href="http://imgur.com/3Wql1tS"><img src="http://i.imgur.com/KyMlAUa.png" title="Main Screen" height="500"  /></a>
-<a href="http://imgur.com/NjzQobR"><img src="http://i.imgur.com/KyMlAUa.png" title="Details Screen" height="500"  /></a>
-<a href="http://imgur.com/GbF5lSv"><img src="http://i.imgur.com/KyMlAUa.png" title="Settings Screen" height="500"  /></a>
+<a href="http://imgur.com/3Wql1tS"><img src="http://i.imgur.com/3Wql1tS.png" title="Main Screen" height="500"  /></a>
+<a href="http://imgur.com/NjzQobR"><img src="http://i.imgur.com/NjzQobR.png" title="Details Screen" height="500"  /></a>
+<a href="http://imgur.com/GbF5lSv"><img src="http://i.imgur.com/GbF5lSv.png" title="Settings Screen" height="500"  /></a>
