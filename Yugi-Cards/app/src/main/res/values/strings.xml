@@ -17,6 +17,8 @@
     <string name="monster">monster</string>
     <string name="spell">spell</string>
     <string name="trap">trap</string>
+    <string name="share">Share</string>
+    <string name="share_card">Share The Card</string>
 
     <array name="card_types_readable">
         <item>@string/monster_readable</item>
