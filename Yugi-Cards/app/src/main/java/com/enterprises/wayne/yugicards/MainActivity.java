@@ -1,8 +1,11 @@
 package com.enterprises.wayne.yugicards;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -13,7 +16,7 @@ import com.koushikdutta.ion.Ion;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener
 {
     /* constants */
     public final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -43,6 +46,8 @@ public class MainActivity extends AppCompatActivity
         // bind the adapter to the list view
         listViewCards.setAdapter(adapterCards);
 
+        // add listener
+        listViewCards.setOnItemClickListener(this);
         loadData();
     }
 
@@ -92,5 +97,13 @@ public class MainActivity extends AppCompatActivity
                         adapterCards.addAll(cardsString);
                     }
                 });
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+    {
+        // open the details activity
+        Intent intent = new Intent(this, DetailsActivity.class);
+        startActivity(intent);
     }
 }
