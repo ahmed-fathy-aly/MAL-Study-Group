@@ -9,25 +9,25 @@
     <string name="key_pref_card_type">key_pref_card_type</string>
     <string name="card_type">Card Type</string>
 
-    <string name="monster">Monster</string>
-    <string name="spell">Spell</string>
-    <string name="trap">Trap</string>
+    <string name="monster_readable">Monster</string>
+    <string name="spell_readable">Spell</string>
+    <string name="trap_readable">Trap</string>
 
 
-    <string name="pref_key_monster">key_monster</string>
-    <string name="pref_key_spell">key_spell</string>
-    <string name="pref_key_trap">key_trap</string>
+    <string name="monster">monster</string>
+    <string name="spell">spell</string>
+    <string name="trap">trap</string>
 
     <array name="card_types_readable">
+        <item>@string/monster_readable</item>
+        <item>@string/spell_readable</item>
+        <item>@string/trap_readable</item>
+    </array>
+
+    <array name="card_types">
         <item>@string/monster</item>
         <item>@string/spell</item>
         <item>@string/trap</item>
-    </array>
-
-    <array name="card_types_keys">
-        <item>@string/pref_key_monster</item>
-        <item>@string/pref_key_spell</item>
-        <item>@string/pref_key_trap</item>
     </array>
 
 </resources>

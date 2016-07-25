@@ -3,6 +3,7 @@ package com.enterprises.wayne.yugicards;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -53,6 +54,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         // add listener
         listViewCards.setOnItemClickListener(this);
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
         loadData();
     }
 
@@ -83,7 +90,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         final ProgressDialog progressDialog = ProgressDialog.show(this, "", getString(R.string.loading));
 
         // make a GET requests
-        String url = "https://greek-302.herokuapp.com/cards/monster";
+        String cardType = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .getString(getString(R.string.key_pref_card_type), getString(R.string.monster));
+        String url = "https://greek-302.herokuapp.com/cards/" + cardType;
         Ion.with(this)
                 .load("GET", url)
                 .asString()
