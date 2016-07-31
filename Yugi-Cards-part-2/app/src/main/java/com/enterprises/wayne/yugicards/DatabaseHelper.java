@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +16,9 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper
 {
     /* constants */
+    private static final String LOG_TAG = DatabaseHelper.class.getSimpleName();
     public static final String DATABASE_NAME = "yugy.data";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 4;
 
     public DatabaseHelper(Context context)
     {
@@ -26,20 +28,24 @@ public class DatabaseHelper extends SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase)
     {
+
         String createSql =
-                "CREATE TABLE CARDS(\n" +
-                        "title TEXT PRIMARY KEY\n" +
-                        ", description TEXT \n" +
-                        ", type TEXT \n" +
-                        ", image_url TEXT\n" +
-                        ", UNIQUE (title) ON CONFLICT REPLACE)";
+                "CREATE TABLE " + CardContract.CardEntry.TABLE_NAME + "(\n" +
+                         CardContract.CardEntry.COLOUMN_TITLE + " TEXT PRIMARY KEY\n" +
+                        ", " + CardContract.CardEntry.COLOUMN_DESCRIPTION + " TEXT \n" +
+                        ", " + CardContract.CardEntry.COLOUMN_TYPE + " TEXT \n" +
+                        ", " + CardContract.CardEntry.COLOUMN_IMAGE_URL + " TEXT\n" +
+                        ", UNIQUE (" + CardContract.CardEntry.COLOUMN_TITLE + ") ON CONFLICT REPLACE)";
+        Log.d(LOG_TAG, "create " + createSql);
+
         sqLiteDatabase.execSQL(createSql);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1)
     {
-        String deleteSql = "DROP TABLE IF EXISTS CARDS\n";
+        String deleteSql = "DROP TABLE IF EXISTS " + CardContract.CardEntry.TABLE_NAME;
+        Log.d(LOG_TAG, "delete " + deleteSql);
         sqLiteDatabase.execSQL(deleteSql);
         onCreate(sqLiteDatabase);
     }
@@ -53,12 +59,12 @@ public class DatabaseHelper extends SQLiteOpenHelper
     public void insertCard(Card card)
     {
         ContentValues contentValues = new ContentValues();
-        contentValues.put("title", card.getTitle());
-        contentValues.put("description", card.getDescription());
-        contentValues.put("type", card.getType());
-        contentValues.put("image_url", card.getImageUrl());
+        contentValues.put(CardContract.CardEntry.COLOUMN_TITLE, card.getTitle());
+        contentValues.put(CardContract.CardEntry.COLOUMN_DESCRIPTION, card.getDescription());
+        contentValues.put(CardContract.CardEntry.COLOUMN_TYPE, card.getType());
+        contentValues.put(CardContract.CardEntry.COLOUMN_IMAGE_URL, card.getImageUrl());
 
-        getWritableDatabase().insert("CARDS", null, contentValues);
+        getWritableDatabase().insert(CardContract.CardEntry.TABLE_NAME, null, contentValues);
     }
 
 
@@ -67,7 +73,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
      */
     public List<Card> getCards()
     {
-        Cursor cursor = getReadableDatabase().query("CARDS", null, null, null, null, null, null);
+        Cursor cursor = getReadableDatabase().query(CardContract.CardEntry.TABLE_NAME, null, null, null, null, null, null);
 
         // parse data from the cursor
         List<Card> cardList = new ArrayList<>();
@@ -76,10 +82,10 @@ public class DatabaseHelper extends SQLiteOpenHelper
             {
                 Card card = new Card();
 
-                card.setTitle(cursor.getString(cursor.getColumnIndex("title")));
-                card.setDescription(cursor.getString(cursor.getColumnIndex("description")));
-                card.setType(cursor.getString(cursor.getColumnIndex("type")));
-                card.setImageUrl(cursor.getString(cursor.getColumnIndex("image_url")));
+                card.setTitle(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_TITLE)));
+                card.setDescription(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_DESCRIPTION)));
+                card.setType(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_TYPE)));
+                card.setImageUrl(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_IMAGE_URL)));
 
                 cardList.add(card);
             } while (cursor.moveToNext());
