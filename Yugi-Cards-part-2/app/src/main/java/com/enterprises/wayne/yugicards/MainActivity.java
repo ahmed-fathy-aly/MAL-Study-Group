@@ -1,9 +1,9 @@
 package com.enterprises.wayne.yugicards;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,7 +19,7 @@ import com.koushikdutta.ion.Ion;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener
 {
     /* constants */
     public final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     /* UI */
     ListView listViewCards;
     ArrayAdapter<String> adapterCards;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     /* fields */
     List<Card> cardsList;
@@ -37,8 +38,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // reference the list view
+        // reference the views
         listViewCards = (ListView) findViewById(R.id.list_view_cards);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
         // create an adapter with empty data
         ArrayList<String> emptyData = new ArrayList<>();
@@ -54,14 +56,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         // add listener
         listViewCards.setOnItemClickListener(this);
+
+        // setup swipe to refresh
+        swipeRefreshLayout.setOnRefreshListener(this);
     }
 
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-        loadData();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -81,14 +80,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         return super.onOptionsItemSelected(item);
     }
 
+
+    @Override
+    public void onRefresh()
+    {
+        loadDataFromAPI();
+    }
+
     /**
      * downloads the cards data from the backend API
      */
-    private void loadData()
+    private void loadDataFromAPI()
     {
-        // show a progress dialog
-        final ProgressDialog progressDialog = ProgressDialog.show(this, "", getString(R.string.loading));
-
         // make a GET requests
         String cardType = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                 .getString(getString(R.string.key_pref_card_type), getString(R.string.monster));
@@ -101,8 +104,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     @Override
                     public void onCompleted(Exception e, String result)
                     {
-                        // dismiss the dialog
-                        progressDialog.dismiss();
+
+                        // stop the swipe to refresh
+                        swipeRefreshLayout.setRefreshing(false);
 
                         // check error
                         if (e != null)
@@ -141,4 +145,5 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         intent.putExtra(DetailsActivity.EXTRAS_CARD, card);
         startActivity(intent);
     }
+
 }

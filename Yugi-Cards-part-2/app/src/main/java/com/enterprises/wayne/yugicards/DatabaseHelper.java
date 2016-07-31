@@ -71,9 +71,15 @@ public class DatabaseHelper extends SQLiteOpenHelper
     /**
      * returns all the cards in the database
      */
-    public List<Card> getCards()
+    public List<Card> getCards(String type)
     {
-        Cursor cursor = getReadableDatabase().query(CardContract.CardEntry.TABLE_NAME, null, null, null, null, null, null);
+        Cursor cursor = getReadableDatabase().query(CardContract.CardEntry.TABLE_NAME,
+                null,
+                CardContract.CardEntry.COLOUMN_TYPE + "=?",
+                new String[]{type},
+                null,
+                null,
+                null);
 
         // parse data from the cursor
         List<Card> cardList = new ArrayList<>();

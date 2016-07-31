@@ -33,9 +33,11 @@ public class DatabaseTest extends ApplicationTestCase<Application>
         databaseHelper.insertCard(card);
 
         // read from the database
-        List<Card> cardList = databaseHelper.getCards();
+        List<Card> cardList = databaseHelper.getCards("monster");
         int cardCount = 0;
         for (Card readCard : cardList)
+        {
+            assertEquals("monster", readCard.getType());
             if (readCard.getTitle().equals(card.getTitle()))
             {
                 cardCount++;
@@ -43,6 +45,7 @@ public class DatabaseTest extends ApplicationTestCase<Application>
                 assertEquals(card.getType(), readCard.getType());
                 assertEquals(card.getImageUrl(), readCard.getImageUrl());
             }
+        }
         assertEquals(1, cardCount);
 
     }
