@@ -24,10 +24,10 @@ public class DatabaseTest extends ApplicationTestCase<Application>
 
         // create a card
         Card card = new Card();
-        card.setTitle("card1");
-        card.setDescription("description1");
+        card.setTitle("card2");
+        card.setDescription("description2");
         card.setType("monster");
-        card.setImageUrl("image1");
+        card.setImageUrl("image2");
 
         // insert into the database
         databaseHelper.insertCard(card);

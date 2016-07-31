@@ -1,5 +1,6 @@
 package com.enterprises.wayne.yugicards;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -51,19 +52,22 @@ public class DatabaseHelper extends SQLiteOpenHelper
      */
     public void insertCard(Card card)
     {
-        String insertSql =
-                "INSERT INTO CARDS (title, description, type, image_url)\n" +
-                        "VALUES (\"" + card.getTitle() + "\", \"" + card.getDescription() + "\", \"" + card.getType() + "\", \"" + card.getImageUrl() + "\")";
-        getWritableDatabase().execSQL(insertSql);
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("title", card.getTitle());
+        contentValues.put("description", card.getDescription());
+        contentValues.put("type", card.getType());
+        contentValues.put("image_url", card.getImageUrl());
+
+        getWritableDatabase().insert("CARDS", null, contentValues);
     }
+
 
     /**
      * returns all the cards in the database
      */
     public List<Card> getCards()
     {
-        String selectSql = "SELECT * FROM CARDS";
-        Cursor cursor = getReadableDatabase().rawQuery(selectSql, null);
+        Cursor cursor = getReadableDatabase().query("CARDS", null, null, null, null, null, null);
 
         // parse data from the cursor
         List<Card> cardList = new ArrayList<>();
