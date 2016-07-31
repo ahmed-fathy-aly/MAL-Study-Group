@@ -18,7 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     /* constants */
     private static final String LOG_TAG = DatabaseHelper.class.getSimpleName();
     public static final String DATABASE_NAME = "yugy.data";
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 5;
 
     public DatabaseHelper(Context context)
     {
@@ -31,11 +31,11 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
         String createSql =
                 "CREATE TABLE " + CardContract.CardEntry.TABLE_NAME + "(\n" +
-                         CardContract.CardEntry.COLOUMN_TITLE + " TEXT PRIMARY KEY\n" +
+                         CardContract.CardEntry._ID + " TEXT PRIMARY KEY\n" +
                         ", " + CardContract.CardEntry.COLOUMN_DESCRIPTION + " TEXT \n" +
                         ", " + CardContract.CardEntry.COLOUMN_TYPE + " TEXT \n" +
                         ", " + CardContract.CardEntry.COLOUMN_IMAGE_URL + " TEXT\n" +
-                        ", UNIQUE (" + CardContract.CardEntry.COLOUMN_TITLE + ") ON CONFLICT REPLACE)";
+                        ", UNIQUE (" + CardContract.CardEntry._ID + ") ON CONFLICT REPLACE)";
         Log.d(LOG_TAG, "create " + createSql);
 
         sqLiteDatabase.execSQL(createSql);
@@ -59,7 +59,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     public void insertCard(Card card)
     {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(CardContract.CardEntry.COLOUMN_TITLE, card.getTitle());
+        contentValues.put(CardContract.CardEntry._ID, card.getTitle());
         contentValues.put(CardContract.CardEntry.COLOUMN_DESCRIPTION, card.getDescription());
         contentValues.put(CardContract.CardEntry.COLOUMN_TYPE, card.getType());
         contentValues.put(CardContract.CardEntry.COLOUMN_IMAGE_URL, card.getImageUrl());
@@ -82,7 +82,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             {
                 Card card = new Card();
 
-                card.setTitle(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_TITLE)));
+                card.setTitle(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry._ID)));
                 card.setDescription(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_DESCRIPTION)));
                 card.setType(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_TYPE)));
                 card.setImageUrl(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_IMAGE_URL)));
