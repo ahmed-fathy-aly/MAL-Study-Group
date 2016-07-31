@@ -36,7 +36,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
                         ", " + CardContract.CardEntry.COLOUMN_TYPE + " TEXT \n" +
                         ", " + CardContract.CardEntry.COLOUMN_IMAGE_URL + " TEXT\n" +
                         ", UNIQUE (" + CardContract.CardEntry._ID + ") ON CONFLICT REPLACE)";
-        Log.d(LOG_TAG, "create " + createSql);
 
         sqLiteDatabase.execSQL(createSql);
     }
@@ -45,7 +44,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1)
     {
         String deleteSql = "DROP TABLE IF EXISTS " + CardContract.CardEntry.TABLE_NAME;
-        Log.d(LOG_TAG, "delete " + deleteSql);
         sqLiteDatabase.execSQL(deleteSql);
         onCreate(sqLiteDatabase);
     }

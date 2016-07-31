@@ -48,6 +48,5 @@ public class DatabaseTest extends ApplicationTestCase<Application>
         }
         assertEquals(1, cardCount);
         databaseHelper.close();
-
     }
 }
