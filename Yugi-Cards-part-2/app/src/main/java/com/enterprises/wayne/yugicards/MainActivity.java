@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -80,11 +81,42 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        loadDataFromDatabase();
+    }
+
+
 
     @Override
     public void onRefresh()
     {
         loadDataFromAPI();
+    }
+
+    /**
+     * loads the cards from the local database
+     */
+    private void loadDataFromDatabase()
+    {
+        // get the card list from the database
+        String cardType = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .getString(getString(R.string.key_pref_card_type), getString(R.string.monster));
+        cardType = Character.toUpperCase(cardType.charAt(0)) + cardType.substring(1);
+        DatabaseHelper databaseHelper = new DatabaseHelper(this);
+        cardsList = databaseHelper.getCards(cardType);
+
+        // convert to a list of strings
+        List<String> cardsString = new ArrayList<String>();
+        for (Card card : cardsList)
+            cardsString.add(card.getTitle());
+        Log.d(LOG_TAG, "database cards " + cardsList);
+
+        // add to the adapter
+        adapterCards.clear();
+        adapterCards.addAll(cardsString);
     }
 
     /**
@@ -116,9 +148,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         }
 
                         // parse the data
-                        List<Card> cards = ParsingUtils.parseResponse(result);
-                        MainActivity.this.cardsList = cards;
-                        if (cards == null)
+                        MainActivity.this.cardsList = ParsingUtils.parseResponse(result);
+                        if (cardsList == null)
                         {
                             Toast.makeText(MainActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
                             return;
@@ -126,12 +157,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                         // convert to a list of strings
                         List<String> cardsString = new ArrayList<String>();
-                        for (Card card : cards)
+                        for (Card card : cardsList)
                             cardsString.add(card.getTitle());
 
                         // add to the adapter
                         adapterCards.clear();
                         adapterCards.addAll(cardsString);
+
+                        // save to the local database
+                        DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
+                        for (Card card : cardsList)
+                            databaseHelper.insertCard(card);
+                        databaseHelper.close();
                     }
                 });
     }

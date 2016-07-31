@@ -18,7 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     /* constants */
     private static final String LOG_TAG = DatabaseHelper.class.getSimpleName();
     public static final String DATABASE_NAME = "yugy.data";
-    public static final int DATABASE_VERSION = 5;
+    public static final int DATABASE_VERSION = 6;
 
     public DatabaseHelper(Context context)
     {
@@ -64,7 +64,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
         contentValues.put(CardContract.CardEntry.COLOUMN_TYPE, card.getType());
         contentValues.put(CardContract.CardEntry.COLOUMN_IMAGE_URL, card.getImageUrl());
 
-        getWritableDatabase().insert(CardContract.CardEntry.TABLE_NAME, null, contentValues);
+        SQLiteDatabase database = getWritableDatabase();
+        database.insert(CardContract.CardEntry.TABLE_NAME, null, contentValues);
     }
 
 
@@ -73,7 +74,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
      */
     public List<Card> getCards(String type)
     {
-        Cursor cursor = getReadableDatabase().query(CardContract.CardEntry.TABLE_NAME,
+        SQLiteDatabase database = getReadableDatabase();
+
+        Cursor cursor = database.query(CardContract.CardEntry.TABLE_NAME,
                 null,
                 CardContract.CardEntry.COLOUMN_TYPE + "=?",
                 new String[]{type},
