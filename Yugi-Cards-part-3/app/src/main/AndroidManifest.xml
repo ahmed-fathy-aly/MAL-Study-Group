@@ -26,6 +26,10 @@
         </activity>
         <activity android:name=".SettingsActivity">
         </activity>
+
+        <provider
+            android:authorities="com.enterprises.wayne.yugicards"
+            android:name=".CardProvider" />
     </application>
 
 </manifest>

@@ -4,6 +4,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
@@ -12,8 +13,9 @@ import android.support.annotation.Nullable;
  */
 public class CardProvider extends ContentProvider
 {
+    /* constants */
     private static final UriMatcher sUriMatcher = buildUriMatcher();
-    private static final int CARD = 42;
+    private static final int CARD = 43;
 
     private static UriMatcher buildUriMatcher()
     {
@@ -22,32 +24,89 @@ public class CardProvider extends ContentProvider
         return matcher;
     }
 
+    /* fields */
+    private DatabaseHelper mDatabaseHelper;
 
     @Override
     public boolean onCreate()
     {
-        return false;
+        mDatabaseHelper = new DatabaseHelper(getContext());
+        return true;
     }
 
     @Nullable
     @Override
-    public Cursor query(Uri uri, String[] strings, String s, String[] strings1, String s1)
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+                        String sortOrder)
     {
-        return null;
+        Cursor retCursor;
+
+        switch (sUriMatcher.match(uri))
+        {
+            case CARD:
+            {
+                retCursor = mDatabaseHelper
+                        .getReadableDatabase()
+                        .query(CardContract.CardEntry.TABLE_NAME,
+                                projection,
+                                selection,
+                                selectionArgs,
+                                null,
+                                null,
+                                sortOrder);
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return retCursor;
     }
 
     @Nullable
     @Override
     public String getType(Uri uri)
     {
-        return null;
+        final int match = sUriMatcher.match(uri);
+
+        switch (match)
+        {
+            case CARD:
+                return CardContract.CardEntry.CONTENT_TYPE;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
     }
 
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues contentValues)
     {
-        return null;
+        // open the database
+        final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+
+        // check which type of uri
+        final int match = sUriMatcher.match(uri);
+        Uri returnUri;
+        switch (match)
+        {
+            case CARD:
+                // insert and create a uri that points to the value added
+                long _id = db.insert(CardContract.CardEntry.TABLE_NAME, null, contentValues);
+                if (_id > 0)
+                {
+                    returnUri = CardContract.CardEntry.CONTENT_URI.buildUpon()
+                            .appendQueryParameter(CardContract.CardEntry._ID, contentValues.getAsString(CardContract.CardEntry._ID)).build();
+
+                } else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return returnUri;
     }
 
     @Override

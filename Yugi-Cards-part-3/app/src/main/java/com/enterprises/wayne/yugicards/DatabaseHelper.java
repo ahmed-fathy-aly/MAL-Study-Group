@@ -18,7 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     /* constants */
     private static final String LOG_TAG = DatabaseHelper.class.getSimpleName();
     public static final String DATABASE_NAME = "yugy.data";
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 7;
 
     public DatabaseHelper(Context context)
     {
