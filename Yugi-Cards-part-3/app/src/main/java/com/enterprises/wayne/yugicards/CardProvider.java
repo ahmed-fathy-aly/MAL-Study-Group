@@ -110,9 +110,27 @@ public class CardProvider extends ContentProvider
     }
 
     @Override
-    public int delete(Uri uri, String s, String[] strings)
+    public int delete(Uri uri, String selection, String[] selectionArgs)
     {
-        return 0;
+        final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int rowsDeleted;
+
+        // this makes delete all rows return the number of rows deleted
+        if (selection == null) selection = "1";
+        switch (match)
+        {
+            case CARD:
+                rowsDeleted = db.delete(
+                        CardContract.CardEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        if (rowsDeleted != 0)
+            getContext().getContentResolver().notifyChange(uri, null);
+        return rowsDeleted;
     }
 
     @Override

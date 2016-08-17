@@ -16,6 +16,7 @@ import java.util.List;
 public class ContentProviderTest extends ApplicationTestCase<Application>
 {
     public static String LOG_TAG = ContentProviderTest.class.getSimpleName();
+
     public ContentProviderTest()
     {
         super(Application.class);
@@ -23,7 +24,7 @@ public class ContentProviderTest extends ApplicationTestCase<Application>
 
 
     @LargeTest
-    public void testInsert()
+    public void testInsertAndQuery()
     {
         // form the content values
         ContentValues contentValues = new ContentValues();
@@ -46,6 +47,28 @@ public class ContentProviderTest extends ApplicationTestCase<Application>
         assertEquals("monster", cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_TYPE)));
         assertEquals("description1", cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_DESCRIPTION)));
         assertEquals("image1", cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_IMAGE_URL)));
-
+        cursor.close();
     }
+
+    public void testDelete()
+    {
+        // delete with no selection
+        mContext.getContentResolver().delete(
+                CardContract.CardEntry.CONTENT_URI,
+                null,
+                null
+        );
+
+        // try to query
+        Cursor cursor = mContext.getContentResolver().query(
+                CardContract.CardEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+        assertEquals(0, cursor.getCount());
+        cursor.close();
+    }
+
 }
