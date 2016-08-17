@@ -105,6 +105,8 @@ public class CardProvider extends ContentProvider
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
+
+        // notify any observers
         getContext().getContentResolver().notifyChange(uri, null);
         return returnUri;
     }
@@ -128,14 +130,37 @@ public class CardProvider extends ContentProvider
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
+        // notify any observers
         if (rowsDeleted != 0)
             getContext().getContentResolver().notifyChange(uri, null);
+
         return rowsDeleted;
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String s, String[] strings)
+    public int update(
+            Uri uri, ContentValues values, String selection, String[] selectionArgs)
     {
-        return 0;
+        final SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+        int rowsUpdated;
+
+        // check which uri is that
+        final int match = sUriMatcher.match(uri);
+        switch (match)
+        {
+            case CARD:
+                rowsUpdated = db.update(CardContract.CardEntry.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        // notify any observers
+        if (rowsUpdated != 0)
+            getContext().getContentResolver().notifyChange(uri, null);
+        return rowsUpdated;
     }
 }
