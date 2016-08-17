@@ -2,6 +2,7 @@ package com.enterprises.wayne.yugicards;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -11,7 +12,17 @@ import android.support.annotation.Nullable;
  */
 public class CardProvider extends ContentProvider
 {
-    
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
+    private static final int CARD = 42;
+
+    private static UriMatcher buildUriMatcher()
+    {
+        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        matcher.addURI(CardContract.CONTENT_AUTHORITY, CardContract.PATH_CARD, CARD);
+        return matcher;
+    }
+
+
     @Override
     public boolean onCreate()
     {
