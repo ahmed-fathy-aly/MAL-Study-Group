@@ -1,5 +1,6 @@
 package com.enterprises.wayne.yugicards;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
@@ -7,8 +8,15 @@ import android.provider.BaseColumns;
  */
 public class CardContract
 {
+    public static final String CONTENT_AUTHORITY = "com.enterprises.wayne.yugicards";
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+    public static final String PATH_CARD= "card";
+
     public static final class CardEntry implements BaseColumns
     {
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_CARD).build();
+
         public static final String TABLE_NAME = "Card";
 
         public static final String COLOUMN_DESCRIPTION= "description";
