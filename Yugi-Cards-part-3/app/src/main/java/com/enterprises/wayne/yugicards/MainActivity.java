@@ -1,6 +1,8 @@
 package com.enterprises.wayne.yugicards;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -89,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
 
-
     @Override
     public void onRefresh()
     {
@@ -101,12 +102,34 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     private void loadDataFromDatabase()
     {
-        // get the card list from the database
+        // get the card type
         String cardType = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                 .getString(getString(R.string.key_pref_card_type), getString(R.string.monster));
         cardType = Character.toUpperCase(cardType.charAt(0)) + cardType.substring(1);
-        DatabaseHelper databaseHelper = new DatabaseHelper(this);
-        cardsList = databaseHelper.getCards(cardType);
+
+        // query the local database
+        Cursor cursor = getContentResolver()
+                .query(CardContract.CardEntry.CONTENT_URI,
+                        null,
+                        CardContract.CardEntry.COLOUMN_TYPE + "=?",
+                        new String[]{cardType},
+                        null,
+                        null);
+
+        // parse data from the cursor
+        cardsList = new ArrayList<>();
+        if (cursor.moveToFirst())
+            do
+            {
+                Card card = new Card();
+
+                card.setTitle(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry._ID)));
+                card.setDescription(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_DESCRIPTION)));
+                card.setType(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_TYPE)));
+                card.setImageUrl(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_IMAGE_URL)));
+
+                cardsList.add(card);
+            } while (cursor.moveToNext());
 
         // convert to a list of strings
         List<String> cardsString = new ArrayList<String>();
@@ -165,10 +188,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         adapterCards.addAll(cardsString);
 
                         // save to the local database
-                        DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
                         for (Card card : cardsList)
-                            databaseHelper.insertCard(card);
-                        databaseHelper.close();
+                        {
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put(CardContract.CardEntry._ID, card.getTitle());
+                            contentValues.put(CardContract.CardEntry.COLOUMN_DESCRIPTION, card.getDescription());
+                            contentValues.put(CardContract.CardEntry.COLOUMN_TYPE, card.getType());
+                            contentValues.put(CardContract.CardEntry.COLOUMN_IMAGE_URL, card.getImageUrl());
+                            getContentResolver()
+                                    .insert(CardContract.CardEntry.CONTENT_URI, contentValues);
+                        }
+
                     }
                 });
     }
