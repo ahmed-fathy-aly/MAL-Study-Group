@@ -3,7 +3,9 @@ Yu-Gi-Oh cards App Part 2
 - Presents the user with a list of cards upon launch.
 - Allows the user to change cards type via a settings: The card type can be Monster – Spell - Trap
 - Allows the user to tap on a card and transition to a details screen with additional information
-- NEW store and load the card from an offline database
+- store and load the card from an offline database
+- [NEW] has a content provider
+
 Screenshots
 -----------
 <a href="http://imgur.com/3Wql1tS"><img src="http://i.imgur.com/3Wql1tS.png" title="Main Screen" height="500"  /></a>
