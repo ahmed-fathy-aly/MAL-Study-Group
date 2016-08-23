@@ -2,6 +2,7 @@ package com.enterprises.wayne.yugicards;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +46,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder>
     {
         View view = LayoutInflater
                 .from(mContext)
-                .inflate(R.layout.row_card, null);
+                .inflate(R.layout.row_card, parent, false);
         return new ViewHolder(view);
     }
 
