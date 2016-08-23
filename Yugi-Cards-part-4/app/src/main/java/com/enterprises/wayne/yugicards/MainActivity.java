@@ -8,9 +8,13 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +30,7 @@ import com.koushikdutta.ion.Ion;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, CardsAdapter.Listener
 {
     private static final int DATABASE_SAVE_LOADER = 42;
     private static final int DATABASE_LOAD_LOADER = 4242;
@@ -34,12 +38,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public final String LOG_TAG = MainActivity.class.getSimpleName();
 
     /* UI */
-    ListView listViewCards;
-    ArrayAdapter<String> adapterCards;
+    RecyclerView recyclerViewCards;
     SwipeRefreshLayout swipeRefreshLayout;
 
+    CardsAdapter cardsAdapter;
+
     /* fields */
-    List<Card> cardsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -48,23 +52,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
 
         // reference the views
-        listViewCards = (ListView) findViewById(R.id.list_view_cards);
+        recyclerViewCards = (RecyclerView) findViewById(R.id.recycler_view_cards);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
-        // create an adapter with empty data
-        ArrayList<String> emptyData = new ArrayList<>();
-        adapterCards = new ArrayAdapter<String>(
-                this,
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
-                emptyData
-        );
+        // setup recycler view
+        cardsAdapter = new CardsAdapter(this);
+        cardsAdapter.setListenr(this);
+        recyclerViewCards.setAdapter(cardsAdapter);
+        recyclerViewCards.setLayoutManager(new GridLayoutManager(this, 2));
 
-        // bind the adapter to the list view
-        listViewCards.setAdapter(adapterCards);
-
-        // add listener
-        listViewCards.setOnItemClickListener(this);
 
         // setup swipe to refresh
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -130,17 +126,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             public void onLoadFinished(Loader<List<Card>> loader, List<Card> cards)
                             {
                                 // update the adapter
-                                cardsList = cards;
-
-                                // convert to a list of strings
-                                List<String> cardsString = new ArrayList<String>();
-                                for (Card card : cardsList)
-                                    cardsString.add(card.getTitle());
-                                Log.d(LOG_TAG, "database cards " + cardsList);
-
-                                // add to the adapter
-                                adapterCards.clear();
-                                adapterCards.addAll(cardsString);
+                                cardsAdapter.setData(cards);
 
                             }
 
@@ -212,21 +198,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         }
 
                         // parse the data
-                        MainActivity.this.cardsList = ParsingUtils.parseResponse(result);
+                        final List<Card> cardsList = ParsingUtils.parseResponse(result);
                         if (cardsList == null)
                         {
                             Toast.makeText(MainActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
                             return;
                         }
 
-                        // convert to a list of strings
-                        List<String> cardsString = new ArrayList<String>();
-                        for (Card card : cardsList)
-                            cardsString.add(card.getTitle());
 
                         // add to the adapter
-                        adapterCards.clear();
-                        adapterCards.addAll(cardsString);
+                        cardsAdapter.setData(cardsList);
 
                         // save to the local database
                         saveDataToDatabase(cardsList);
@@ -236,11 +217,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
+    public void onCardClicked(Card card)
     {
-        // open the details activity
         Intent intent = new Intent(this, DetailsActivity.class);
-        Card card = cardsList.get(position);
         intent.putExtra(DetailsActivity.EXTRAS_CARD, card);
         startActivity(intent);
     }
