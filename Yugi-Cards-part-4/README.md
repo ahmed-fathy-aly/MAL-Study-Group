@@ -1,4 +1,4 @@
-Yu-Gi-Oh cards App Part 2
+Yu-Gi-Oh cards App Part 4
 =========================
 - Presents the user with a list of cards upon launch.
 - Allows the user to change cards type via a settings: The card type can be Monster – Spell - Trap
