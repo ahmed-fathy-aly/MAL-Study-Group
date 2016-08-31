@@ -8,20 +8,14 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.koushikdutta.async.future.FutureCallback;
@@ -32,18 +26,19 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, CardsAdapter.Listener
 {
+
+    /* constants */
     private static final int DATABASE_SAVE_LOADER = 42;
     private static final int DATABASE_LOAD_LOADER = 4242;
-    /* constants */
     public final String LOG_TAG = MainActivity.class.getSimpleName();
 
     /* UI */
-    RecyclerView recyclerViewCards;
-    SwipeRefreshLayout swipeRefreshLayout;
-
-    CardsAdapter cardsAdapter;
+    private RecyclerView mRecyclerViewCards;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private CardsAdapter mCardsAdapter;
 
     /* fields */
+    private boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -52,18 +47,24 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         setContentView(R.layout.activity_main);
 
         // reference the views
-        recyclerViewCards = (RecyclerView) findViewById(R.id.recycler_view_cards);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        mRecyclerViewCards = (RecyclerView) findViewById(R.id.recycler_view_cards);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+
+        // check if it has enough space for two panes
+        mTwoPane = findViewById(R.id.container_details_fragment) != null;
+        Log.d(LOG_TAG, "two pane " + mTwoPane);
 
         // setup recycler view
-        cardsAdapter = new CardsAdapter(this);
-        cardsAdapter.setListenr(this);
-        recyclerViewCards.setAdapter(cardsAdapter);
-        recyclerViewCards.setLayoutManager(new GridLayoutManager(this, 2));
+        mCardsAdapter = new CardsAdapter(this);
+        mCardsAdapter.setListenr(this);
+        mRecyclerViewCards.setAdapter(mCardsAdapter);
+        mRecyclerViewCards.setLayoutManager(new GridLayoutManager(this, 2));
 
 
         // setup swipe to refresh
-        swipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        loadDataFromDatabase();
+
     }
 
 
@@ -85,12 +86,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-        loadDataFromDatabase();
-    }
+
 
 
     @Override
@@ -126,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                             public void onLoadFinished(Loader<List<Card>> loader, List<Card> cards)
                             {
                                 // update the adapter
-                                cardsAdapter.setData(cards);
+                                mCardsAdapter.setData(cards);
 
                             }
 
@@ -188,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     {
 
                         // stop the swipe to refresh
-                        swipeRefreshLayout.setRefreshing(false);
+                        mSwipeRefreshLayout.setRefreshing(false);
 
                         // check error
                         if (e != null)
@@ -207,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
 
                         // add to the adapter
-                        cardsAdapter.setData(cardsList);
+                        mCardsAdapter.setData(cardsList);
 
                         // save to the local database
                         saveDataToDatabase(cardsList);
@@ -219,9 +215,19 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     public void onCardClicked(Card card)
     {
-        Intent intent = new Intent(this, DetailsActivity.class);
-        intent.putExtra(DetailsActivity.EXTRAS_CARD, card);
-        startActivity(intent);
+        if (mTwoPane)
+        {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container_details_fragment, DetailsFragment.newInstance(card))
+                    .commit();
+        } else
+        {
+            Intent intent = new Intent(this, DetailsActivity.class);
+            intent.putExtra(DetailsActivity.EXTRAS_CARD, card);
+            startActivity(intent);
+
+        }
     }
 
     /**

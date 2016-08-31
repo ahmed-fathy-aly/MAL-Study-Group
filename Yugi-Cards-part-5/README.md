@@ -5,6 +5,7 @@ Yu-Gi-Oh cards App Part 4
 - Allows the user to tap on a card and transition to a details screen with additional information
 - store and load the card from an offline database
 - has a content provider
+- [NEW] has master details flow
 
 Screenshots
 -----------
