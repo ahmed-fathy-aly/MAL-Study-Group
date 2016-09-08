@@ -21,6 +21,10 @@ import android.widget.Toast;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     /* fields */
     private boolean mTwoPane;
+    private boolean mNeedToUpdate = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -52,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         // check if it has enough space for two panes
         mTwoPane = findViewById(R.id.container_details_fragment) != null;
-        Log.d(LOG_TAG, "two pane " + mTwoPane);
 
         // setup recycler view
         mCardsAdapter = new CardsAdapter(this);
@@ -60,13 +64,31 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         mRecyclerViewCards.setAdapter(mCardsAdapter);
         mRecyclerViewCards.setLayoutManager(new GridLayoutManager(this, 2));
 
-
         // setup swipe to refresh
         mSwipeRefreshLayout.setOnRefreshListener(this);
-        loadDataFromDatabase();
+
+        EventBus.getDefault().register(this);
 
     }
 
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        if (mNeedToUpdate)
+        {
+            loadDataFromDatabase();
+            mNeedToUpdate = false;
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -209,13 +231,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                             return;
                         }
 
-
-                        // add to the adapter
-                        mCardsAdapter.setData(cardsList);
-
                         // save to the local database
                         saveDataToDatabase(cardsList);
 
+                        // now load from the database
+                        loadDataFromDatabase();
                     }
                 });
     }
@@ -238,83 +258,89 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         }
     }
 
-    /**
-     * loads a list of cards from the database
-     */
-    static class DatabaseLoadLoader extends AsyncTaskLoader<List<Card>>
+    @Subscribe
+    public void onEvent(DatabaseUpdatedEvent event)
     {
-        private String mCardType;
-
-        public DatabaseLoadLoader(Context context, String type)
-        {
-            super(context);
-            this.mCardType = type;
-        }
-
-        @Override
-        public List<Card> loadInBackground()
-        {
-
-            // query the local database
-            Cursor cursor = getContext()
-                    .getContentResolver()
-                    .query(CardContract.CardEntry.CONTENT_URI,
-                            null,
-                            CardContract.CardEntry.COLOUMN_TYPE + "=?",
-                            new String[]{mCardType},
-                            null,
-                            null);
-
-            // parse data from the cursor
-            List<Card> cardsList = new ArrayList<>();
-            if (cursor.moveToFirst())
-                do
-                {
-                    Card card = new Card();
-
-                    card.setTitle(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry._ID)));
-                    card.setDescription(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_DESCRIPTION)));
-                    card.setType(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_TYPE)));
-                    card.setImageUrl(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_IMAGE_URL)));
-
-                    cardsList.add(card);
-                } while (cursor.moveToNext());
-
-            return cardsList;
-        }
+        mNeedToUpdate = true;
     }
 
-    /**
-     * saves a list of cards to the database
-     */
-    static class DatabaseSaveLoader extends android.content.AsyncTaskLoader<Void>
+/**
+ * loads a list of cards from the database
+ */
+static class DatabaseLoadLoader extends AsyncTaskLoader<List<Card>>
+{
+    private String mCardType;
+
+    public DatabaseLoadLoader(Context context, String type)
     {
-        private List<Card> mCards;
+        super(context);
+        this.mCardType = type;
+    }
 
-        public DatabaseSaveLoader(Context context, List<Card> cards)
-        {
-            super(context);
-            this.mCards = cards;
-        }
+    @Override
+    public List<Card> loadInBackground()
+    {
 
-        @Override
-        public Void loadInBackground()
-        {
-            // save to the local database
-            for (Card card : mCards)
+        // query the local database
+        Cursor cursor = getContext()
+                .getContentResolver()
+                .query(CardContract.CardEntry.CONTENT_URI,
+                        null,
+                        CardContract.CardEntry.COLOUMN_TYPE + "=?",
+                        new String[]{mCardType},
+                        null,
+                        null);
+
+        // parse data from the cursor
+        List<Card> cardsList = new ArrayList<>();
+        if (cursor.moveToFirst())
+            do
             {
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(CardContract.CardEntry._ID, card.getTitle());
-                contentValues.put(CardContract.CardEntry.COLOUMN_DESCRIPTION, card.getDescription());
-                contentValues.put(CardContract.CardEntry.COLOUMN_TYPE, card.getType());
-                contentValues.put(CardContract.CardEntry.COLOUMN_IMAGE_URL, card.getImageUrl());
-                getContext()
-                        .getContentResolver()
-                        .insert(CardContract.CardEntry.CONTENT_URI, contentValues);
-            }
+                Card card = new Card();
 
+                card.setTitle(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry._ID)));
+                card.setDescription(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_DESCRIPTION)));
+                card.setType(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_TYPE)));
+                card.setImageUrl(cursor.getString(cursor.getColumnIndex(CardContract.CardEntry.COLOUMN_IMAGE_URL)));
 
-            return null;
-        }
+                cardsList.add(card);
+            } while (cursor.moveToNext());
+
+        return cardsList;
     }
+}
+
+/**
+ * saves a list of cards to the database
+ */
+static class DatabaseSaveLoader extends android.content.AsyncTaskLoader<Void>
+{
+    private List<Card> mCards;
+
+    public DatabaseSaveLoader(Context context, List<Card> cards)
+    {
+        super(context);
+        this.mCards = cards;
+    }
+
+    @Override
+    public Void loadInBackground()
+    {
+        // save to the local database
+        for (Card card : mCards)
+        {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(CardContract.CardEntry._ID, card.getTitle());
+            contentValues.put(CardContract.CardEntry.COLOUMN_DESCRIPTION, card.getDescription());
+            contentValues.put(CardContract.CardEntry.COLOUMN_TYPE, card.getType());
+            contentValues.put(CardContract.CardEntry.COLOUMN_IMAGE_URL, card.getImageUrl());
+            getContext()
+                    .getContentResolver()
+                    .insert(CardContract.CardEntry.CONTENT_URI, contentValues);
+        }
+
+
+        return null;
+    }
+}
 }

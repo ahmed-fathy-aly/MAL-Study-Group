@@ -33,6 +33,11 @@
 
         <activity android:name=".CreateCardActivity">
         </activity>
+
+        <service
+            android:name=".CreateCardService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

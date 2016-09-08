@@ -46,13 +46,20 @@
                 android:text="http://i.imgur.com/"
                 android:hint="@string/image_url"/>
 
-            <com.enterprises.wayne.yugicards.ScaledImageView
+            <ImageView
                 android:id="@+id/image_view_card"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:src="@mipmap/ic_launcher"/>
 
         </LinearLayout>
+
+        <Spinner
+            android:id="@+id/spinner_type"
+            android:entries="@array/card_types"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
