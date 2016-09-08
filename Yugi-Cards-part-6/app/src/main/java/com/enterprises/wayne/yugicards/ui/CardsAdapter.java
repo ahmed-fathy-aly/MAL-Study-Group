@@ -35,6 +35,16 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder>
         notifyDataSetChanged();
     }
 
+
+    /**
+     * adds a new card and updates UI
+     */
+    public void add(Card card)
+    {
+        mCardsList.add(card);
+        notifyItemInserted(mCardsList.size() - 1);
+    }
+
     public void setListenr(Listener listenr)
     {
         this.mListener = listenr;
@@ -65,6 +75,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder>
     {
         return mCardsList.size();
     }
+
 
     class ViewHolder extends RecyclerView.ViewHolder
     {

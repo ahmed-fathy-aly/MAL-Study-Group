@@ -5,7 +5,8 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.Context;
 
-import com.enterprises.wayne.yugicards.event.DatabaseUpdatedEvent;
+import com.enterprises.wayne.yugicards.entity.Card;
+import com.enterprises.wayne.yugicards.event.CardAddedEvent;
 import com.enterprises.wayne.yugicards.database.CardContract;
 
 import org.greenrobot.eventbus.EventBus;
@@ -56,7 +57,13 @@ public class CreateCardService extends IntentService
 
 
         // notify that the database is updated
-        EventBus.getDefault().post(new DatabaseUpdatedEvent());
+        Card card = new Card();
+        card.setTitle(intent.getStringExtra(EXTRA_TITLE));
+        card.setDescription(intent.getStringExtra(EXTRA_DESCRIPTION));
+        card.setType(intent.getStringExtra(EXTRA_TYPE));
+        card.setImageUrl(intent.getStringExtra(EXTRA_IMAGE_URL));
+
+        EventBus.getDefault().post(new CardAddedEvent(card));
     }
 
 }
