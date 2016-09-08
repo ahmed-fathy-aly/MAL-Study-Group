@@ -1,10 +1,12 @@
-package com.enterprises.wayne.yugicards;
+package com.enterprises.wayne.yugicards.activity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+
+import com.enterprises.wayne.yugicards.fragment.CreateCardFragment;
+import com.enterprises.wayne.yugicards.R;
 
 /**
  * fills the form to create a card

@@ -1,4 +1,4 @@
-package com.enterprises.wayne.yugicards;
+package com.enterprises.wayne.yugicards.database;
 
 import android.content.ContentResolver;
 import android.net.Uri;

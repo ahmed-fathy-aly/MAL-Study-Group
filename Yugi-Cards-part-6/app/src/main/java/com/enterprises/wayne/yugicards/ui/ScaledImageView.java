@@ -1,4 +1,4 @@
-package com.enterprises.wayne.yugicards;
+package com.enterprises.wayne.yugicards.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;

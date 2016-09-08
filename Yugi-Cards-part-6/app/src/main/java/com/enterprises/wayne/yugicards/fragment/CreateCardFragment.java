@@ -1,4 +1,4 @@
-package com.enterprises.wayne.yugicards;
+package com.enterprises.wayne.yugicards.fragment;
 
 
 import android.os.Bundle;
@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import com.enterprises.wayne.yugicards.service.CreateCardService;
+import com.enterprises.wayne.yugicards.R;
 import com.squareup.picasso.Picasso;
 
 

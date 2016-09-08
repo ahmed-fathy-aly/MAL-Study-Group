@@ -1,4 +1,4 @@
-package com.enterprises.wayne.yugicards;
+package com.enterprises.wayne.yugicards.fragment;
 
 
 import android.content.Intent;
@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.enterprises.wayne.yugicards.R;
+import com.enterprises.wayne.yugicards.entity.Card;
 import com.squareup.picasso.Picasso;
 
 

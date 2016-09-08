@@ -6,9 +6,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.test.ApplicationTestCase;
 import android.test.suitebuilder.annotation.LargeTest;
-import android.util.Log;
 
-import java.util.List;
+import com.enterprises.wayne.yugicards.database.CardContract;
 
 /**
  * test the local SQL database

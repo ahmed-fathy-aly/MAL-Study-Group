@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.enterprises.wayne.yugicards.ScaledImageView
+<com.enterprises.wayne.yugicards.ui.ScaledImageView
     android:id="@+id/image_view_card"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,4 +8,4 @@
     android:foreground="?attr/selectableItemBackground"
     >
 
-</com.enterprises.wayne.yugicards.ScaledImageView>
+</com.enterprises.wayne.yugicards.ui.ScaledImageView>

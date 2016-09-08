@@ -4,6 +4,9 @@ import android.app.Application;
 import android.test.ApplicationTestCase;
 import android.test.suitebuilder.annotation.LargeTest;
 
+import com.enterprises.wayne.yugicards.database.DatabaseHelper;
+import com.enterprises.wayne.yugicards.entity.Card;
+
 import java.util.List;
 
 /**

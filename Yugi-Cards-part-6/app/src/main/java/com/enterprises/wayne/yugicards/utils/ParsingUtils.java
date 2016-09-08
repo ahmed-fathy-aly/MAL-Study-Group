@@ -1,6 +1,8 @@
-package com.enterprises.wayne.yugicards;
+package com.enterprises.wayne.yugicards.utils;
 
 import android.util.Log;
+
+import com.enterprises.wayne.yugicards.entity.Card;
 
 import org.json.JSONArray;
 import org.json.JSONException;

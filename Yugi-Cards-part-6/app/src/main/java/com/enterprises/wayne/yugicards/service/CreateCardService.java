@@ -1,10 +1,12 @@
-package com.enterprises.wayne.yugicards;
+package com.enterprises.wayne.yugicards.service;
 
 import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.Context;
-import android.util.Log;
+
+import com.enterprises.wayne.yugicards.event.DatabaseUpdatedEvent;
+import com.enterprises.wayne.yugicards.database.CardContract;
 
 import org.greenrobot.eventbus.EventBus;
 

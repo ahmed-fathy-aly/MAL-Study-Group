@@ -1,11 +1,12 @@
-Yu-Gi-Oh cards App Part 4
+Yu-Gi-Oh cards App Part 6
 =========================
 - Presents the user with a list of cards upon launch.
 - Allows the user to change cards type via a settings: The card type can be Monster – Spell - Trap
 - Allows the user to tap on a card and transition to a details screen with additional information
 - store and load the card from an offline database
 - has a content provider
-- [NEW] has master details flow
+- has master details flow
+- [NEW] can create a card to the local database
 
 Screenshots
 -----------

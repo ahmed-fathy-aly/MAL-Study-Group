@@ -1,5 +1,8 @@
 package com.enterprises.wayne.yugicards;
 
+import com.enterprises.wayne.yugicards.entity.Card;
+import com.enterprises.wayne.yugicards.utils.ParsingUtils;
+
 import org.junit.Test;
 
 import java.util.List;

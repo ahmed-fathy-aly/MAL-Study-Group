@@ -1,4 +1,4 @@
-package com.enterprises.wayne.yugicards;
+package com.enterprises.wayne.yugicards.activity;
 
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
@@ -13,17 +13,23 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.enterprises.wayne.yugicards.utils.ParsingUtils;
+import com.enterprises.wayne.yugicards.R;
+import com.enterprises.wayne.yugicards.database.CardContract;
+import com.enterprises.wayne.yugicards.event.DatabaseUpdatedEvent;
+import com.enterprises.wayne.yugicards.fragment.CreateCardFragment;
+import com.enterprises.wayne.yugicards.fragment.DetailsFragment;
+import com.enterprises.wayne.yugicards.entity.Card;
+import com.enterprises.wayne.yugicards.ui.CardsAdapter;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
